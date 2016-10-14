@@ -6,7 +6,7 @@ using std::string;
 void RemoveCommentingFromLine(string& line)
 {
    //search for any comment and remove
-   string::size_type idx = line.find('//');
+   string::size_type idx = line.find("//");
 
    if (idx != string::npos)
    {
@@ -54,8 +54,8 @@ void iniFileLoaderBase::GetParameterValueAsString(string& line)
   string::size_type endIdx;
 
   //define some delimiters
-  const string delims(" \;=,");
-
+  const string delims(" ;=,");
+  
   begIdx = line.find_first_not_of(delims);
 
   //find the end of the parameter description
@@ -106,8 +106,8 @@ std::string iniFileLoaderBase::GetNextToken()
   string::size_type endIdx;
 
   //define some delimiters
-  const string delims(" \;=,");
-
+  const string delims(" ;=,");
+  
   begIdx = CurrentLine.find_first_not_of(delims);
 
   //find the end of the parameter description

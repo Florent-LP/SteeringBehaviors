@@ -49,7 +49,7 @@ GameWorld::GameWorld(int cx, int cy):
   m_pPath = new Path(5, border, border, cx-border, cy-border, true); 
 
   //setup the agents
-  for (int a=0; a<Prm.NumAgents; ++a)
+  /*for (int a=0; a<Prm.NumAgents; ++a)
   {
 
     //determine a random starting position
@@ -89,7 +89,47 @@ GameWorld::GameWorld(int cx, int cy):
     m_Vehicles[i]->Steering()->EvadeOn(m_Vehicles[Prm.NumAgents-1]);
 
   }
-#endif
+#endif*/
+
+  int NumAgents = 6;
+  Vector2D SpawnPos = Vector2D(m_vCrosshair);
+  for (int a=0; a<NumAgents; ++a)
+  {
+
+    //determine a random starting position
+    /*Vector2D SpawnPos = Vector2D(cx/2.0+RandomClamped()*cx/2.0,
+                                 cy/2.0+RandomClamped()*cy/2.0);*/
+
+
+    Vehicle* pVehicle = new Vehicle(this,
+                                    SpawnPos,                 //initial position
+                                    /*RandFloat()**/TwoPi,        //start rotation
+                                    Vector2D(0,0),            //velocity
+                                    Prm.VehicleMass,          //mass
+                                    Prm.MaxSteeringForce,     //max force
+                                    Prm.MaxSpeed,             //max velocity
+                                    Prm.MaxTurnRatePerSecond, //max turn rate
+                                    Prm.VehicleScale);        //scale
+
+    m_Vehicles.push_back(pVehicle);
+
+    //add it to the cell subdivision
+    m_pCellSpace->AddEntity(pVehicle);
+  }
+
+  m_Vehicles[NumAgents - 1]->SetScale(Vector2D(10, 10));
+  //m_Vehicles[NumAgents - 1]->Steering()->WanderOn();
+  m_Vehicles[NumAgents - 1]->Steering()->ArriveOn();
+  m_Vehicles[NumAgents - 1]->SetMaxSpeed(40);
+
+
+  for (int i = 0; i<NumAgents - 1; ++i)
+  {
+	  m_Vehicles[i]->SetScale(Vector2D(8, 8));
+	  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i+1], Vector2D(-30, 0));
+	  //m_Vehicles[i]->Steering()->SeparationOn();
+	  m_Vehicles[i]->SetMaxSpeed(80);
+  }
  
   //create any obstacles or walls
   //CreateObstacles();
@@ -558,7 +598,7 @@ void GameWorld::Render()
     }
   }  
 
-//#define CROSSHAIR
+#define CROSSHAIR
 #ifdef CROSSHAIR
   //and finally the crosshair
   gdi->RedPen();
