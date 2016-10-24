@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "Vehicle.h"
+#include "Agent.h"
 #include "constants.h"
 #include "Obstacle.h"
 #include "2d/Geometry.h"
@@ -91,44 +92,19 @@ GameWorld::GameWorld(int cx, int cy):
   }
 #endif*/
 
-  int NumAgents = 6;
-  Vector2D SpawnPos = Vector2D(m_vCrosshair);
-  for (int a=0; a<NumAgents; ++a)
-  {
-
-    //determine a random starting position
-    /*Vector2D SpawnPos = Vector2D(cx/2.0+RandomClamped()*cx/2.0,
-                                 cy/2.0+RandomClamped()*cy/2.0);*/
-
-
-    Vehicle* pVehicle = new Vehicle(this,
-                                    SpawnPos,                 //initial position
-                                    /*RandFloat()**/TwoPi,        //start rotation
-                                    Vector2D(0,0),            //velocity
-                                    Prm.VehicleMass,          //mass
-                                    Prm.MaxSteeringForce,     //max force
-                                    Prm.MaxSpeed,             //max velocity
-                                    Prm.MaxTurnRatePerSecond, //max turn rate
-                                    Prm.VehicleScale);        //scale
-
-    m_Vehicles.push_back(pVehicle);
-
+  Agent* agent;
+  int nbAgents = 6;
+  for (int i = 0; i < nbAgents; i++) {
+	  if (i == 0) {
+		  agent = new LeaderAgent(this, nbAgents - 1);
+	  } else {
+		  agent = new ChaserAgent(this, (LeaderAgent*)m_Agents[0]);
+		  ((ChaserAgent*)agent)->follow(m_Agents[i - 1]);
+	  }
+	m_Agents.push_back(agent);
+    m_Vehicles.push_back(agent->getVehicle()); // À supprimer ?
     //add it to the cell subdivision
-    m_pCellSpace->AddEntity(pVehicle);
-  }
-
-  m_Vehicles[NumAgents - 1]->SetScale(Vector2D(10, 10));
-  //m_Vehicles[NumAgents - 1]->Steering()->WanderOn();
-  m_Vehicles[NumAgents - 1]->Steering()->ArriveOn();
-  m_Vehicles[NumAgents - 1]->SetMaxSpeed(40);
-
-
-  for (int i = 0; i<NumAgents - 1; ++i)
-  {
-	  m_Vehicles[i]->SetScale(Vector2D(8, 8));
-	  m_Vehicles[i]->Steering()->OffsetPursuitOn(m_Vehicles[i+1], Vector2D(-30, 0));
-	  //m_Vehicles[i]->Steering()->SeparationOn();
-	  m_Vehicles[i]->SetMaxSpeed(80);
+    m_pCellSpace->AddEntity(agent->getVehicle());
   }
  
   //create any obstacles or walls
@@ -141,9 +117,14 @@ GameWorld::GameWorld(int cx, int cy):
 //------------------------------------------------------------------------
 GameWorld::~GameWorld()
 {
-  for (unsigned int a=0; a<m_Vehicles.size(); ++a)
+  for (unsigned int a=0; a<m_Agents.size(); ++a)
   {
-    delete m_Vehicles[a];
+    delete m_Agents[a];
+  }
+
+  for (unsigned int v=0; v<m_Vehicles.size(); ++v)
+  {
+    delete m_Vehicles[v];
   }
 
   for (unsigned int ob=0; ob<m_Obstacles.size(); ++ob)

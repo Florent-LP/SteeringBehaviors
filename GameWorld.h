@@ -26,6 +26,7 @@
 class Obstacle;
 class Wall2D;
 class Path;
+class Agent;
 
 
 typedef std::vector<BaseGameEntity*>::iterator  ObIt;
@@ -34,6 +35,9 @@ typedef std::vector<BaseGameEntity*>::iterator  ObIt;
 class GameWorld
 { 
 private:
+
+  //a container of all the agents
+  std::vector<Agent*>           m_Agents;
 
   //a container of all the moving entities
   std::vector<Vehicle*>         m_Vehicles;

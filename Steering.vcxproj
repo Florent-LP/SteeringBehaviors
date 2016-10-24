@@ -149,6 +149,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="Agent.cpp" />
     <ClCompile Include="SteeringBehaviors.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -195,6 +196,7 @@
     <ClInclude Include="Common\misc\CellSpacePartition.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="GameWorld.h" />
+    <ClInclude Include="Agent.h" />
     <ClInclude Include="MovingEntity.h" />
     <ClInclude Include="SteeringBehaviors.h" />
     <ClInclude Include="Vehicle.h" />
