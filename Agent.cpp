@@ -2,7 +2,7 @@
 
 // Agent --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Agent::Agent(GameWorld* world, Vector2D position, double rotation) :
-	nextChaser(nullptr)
+	nextAgent(nullptr)
 {
 	if (position == Vector2D(-1, -1))
 		position = Vector2D(
@@ -18,38 +18,119 @@ Agent::Agent(GameWorld* world, Vector2D position, double rotation) :
 		Prm.MaxSpeed,             //max velocity
 		Prm.MaxTurnRatePerSecond, //max turn rate
 		Prm.VehicleScale);        //scale
+
+	if (!vehicle->Steering()->isSpacePartitioningOn())
+		vehicle->Steering()->ToggleSpacePartitioningOnOff();
 }
 
 Agent::~Agent() {
-	delete vehicle;
+	//delete vehicle; // Already cleaned in ~GameWorld
 }
 
 // LeaderAgent --------------------------------------------------------------------------------------------------------------------------------------------------------------
 LeaderAgent::LeaderAgent(GameWorld* world, int maxFollowers, Vector2D position, double rotation) :
-	Agent(world, position, rotation), maxFollowers(maxFollowers)
+	Agent(world, position, rotation), maxFollowers(maxFollowers), followers(0)
 {
+	vehicle->SetScale(Vector2D(8, 8));
+	vehicle->SetMaxSpeed(70);
 	vehicle->Steering()->WanderOn();
-	vehicle->SetScale(Vector2D(10, 10));
+}
+
+bool LeaderAgent::incFollowers() {
+	if (followers < maxFollowers) {
+		followers++;
+		return true;
+	}
+	else
+		return false;
+}
+
+bool LeaderAgent::decFollowers() {
+	if (followers > 0) {
+		followers--;
+		return true;
+	}
+	else
+		return false;
 }
 
 LeaderAgent::~LeaderAgent() {
 }
 
 // ChaserAgent --------------------------------------------------------------------------------------------------------------------------------------------------------------
-ChaserAgent::ChaserAgent(GameWorld* world, LeaderAgent* leader, Vector2D offset, Vector2D position, double rotation) :
-	Agent(world, position, rotation), leader(leader), prevChaser(nullptr), offset(offset)
+ChaserAgent::ChaserAgent(GameWorld* world, Vector2D offset, Vector2D position, double rotation) :
+	Agent(world, position, rotation), leader(nullptr), prevAgent(nullptr), offset(offset)
 {
-	vehicle->SetScale(Vector2D(8, 8));
+	vehicle->Steering()->WanderOn();
 }
 
 bool ChaserAgent::follow(Agent* agent) {
-	if (agent->getLeader()->incFollowers()) {
-		vehicle->Steering()->OffsetPursuitOn(agent->getVehicle(), offset);
-		if (agent->getNext())
-			agent->getNext()->follow(this);
+	LeaderAgent* newLeader = agent->getLeader();
+	Agent* newPrev = agent;
+	ChaserAgent* newNext = (ChaserAgent*)agent->getNext();
+
+	if (newLeader && newLeader->canAddFollower()) {
+		newLeader->incFollowers();
+		if (leader) unfollow();
+		leader = newLeader;
+
+		vehicle->Steering()->WanderOff();
+		vehicle->Steering()->OffsetPursuitOn(newPrev->getVehicle(), offset);
+
+		prevAgent = newPrev;
+		prevAgent->setNext(this);
+
+		if (newNext) {
+			//newNext->follow(this);
+			newNext->getVehicle()->Steering()->OffsetPursuitOff();
+			newNext->getVehicle()->Steering()->OffsetPursuitOn(vehicle, newNext->getOffset());
+			newNext->setPrev(this);
+			nextAgent = newNext;
+		}
+
 		return true;
-	} else {
+	} else
 		return false;
+}
+
+void ChaserAgent::unfollow() {
+	// Avoid "this was nullptr" Exception
+	LeaderAgent* oldLeader = leader;
+	Agent* oldPrev = prevAgent;
+	ChaserAgent* oldNext = (ChaserAgent*)nextAgent;
+
+	oldLeader->decFollowers();
+	leader = nullptr;
+
+	if (oldNext) {
+		//oldNext->follow(oldPrev);
+		oldNext->getVehicle()->Steering()->OffsetPursuitOff();
+		oldNext->getVehicle()->Steering()->OffsetPursuitOn(oldPrev->getVehicle(), oldNext->getOffset());
+		oldNext->setPrev(oldPrev);
+	} else
+		oldPrev->setNext(nullptr);
+	prevAgent = nullptr;
+	nextAgent = nullptr;
+
+	vehicle->Steering()->OffsetPursuitOff();
+	vehicle->Steering()->WanderOn();
+}
+
+void ChaserAgent::Update(double time_elapsed) {
+	//if (RandInt(0, 999) != 0) return; // 0.001 proba to follow another agent
+
+	const double followRange = 50.0;
+	const std::vector<Agent*>& agents = vehicle->World()->Agents();
+
+	for (unsigned i = 0; i < agents.size(); i++) {
+		if ( agents[i] != this && (leader == nullptr || agents[i]->getLeader() != leader) ) {
+
+			Vector2D toAgent = agents[i]->getVehicle()->Pos() - vehicle->Pos();
+			if (toAgent.LengthSq() < followRange * followRange) {
+					follow(agents[i]);
+					break;
+			}
+		}
 	}
 }
 

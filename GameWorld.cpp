@@ -92,26 +92,58 @@ GameWorld::GameWorld(int cx, int cy):
   }
 #endif*/
 
+  int nbAgents = 20;
+  int nbLeaders = 2;
+
   Agent* agent;
-  int nbAgents = 6;
   for (int i = 0; i < nbAgents; i++) {
-	  if (i == 0) {
-		  agent = new LeaderAgent(this, nbAgents - 1);
-	  } else {
-		  agent = new ChaserAgent(this, (LeaderAgent*)m_Agents[0]);
-		  ((ChaserAgent*)agent)->follow(m_Agents[i - 1]);
-	  }
+
+	if (i < nbLeaders)
+	  agent = new LeaderAgent(this, 4 + i*5);
+	else
+	  agent = new ChaserAgent(this);
+
 	m_Agents.push_back(agent);
-    m_Vehicles.push_back(agent->getVehicle()); // À supprimer ?
-    //add it to the cell subdivision
-    m_pCellSpace->AddEntity(agent->getVehicle());
+	m_Vehicles.push_back(agent->getVehicle()); // À supprimer ?
+	//add it to the cell subdivision
+	m_pCellSpace->AddEntity(agent->getVehicle());
   }
+
+  m_Agents[0]->getVehicle()->Steering()->WanderOff();
+  m_Agents[1]->getVehicle()->Steering()->WanderOff();
+  m_Agents[1]->getVehicle()->Steering()->ArriveOn();
+  m_Agents[1]->getVehicle()->SetMaxSpeed(150);
  
   //create any obstacles or walls
   //CreateObstacles();
   //CreateWalls();
 }
 
+Agent* GameWorld::getAgent(Vehicle* v) {
+	int agentId;
+	int vehicleId;
+
+	// If the method hasn't been used yet, populate the map first
+	if (m_Vehicle2Agent.empty() && !m_Agents.empty())
+		for (unsigned i = 0; i < m_Agents.size(); i++) {
+			agentId = m_Agents[i]->ID();
+			vehicleId = m_Agents[i]->getVehicle()->ID();
+			m_Vehicle2Agent[vehicleId] = agentId;
+		}
+
+	// Then, use the map to find an agent from a vehicle
+	vehicleId = v->ID();
+	if (m_Vehicle2Agent.count(vehicleId) == 1) {
+		agentId = m_Vehicle2Agent.at(vehicleId);
+
+		for (unsigned i = 0; i < m_Agents.size(); i++)
+			if (m_Agents[i]->ID() == agentId)
+				return m_Agents[i];
+	}
+
+	// No corresponding agent was found
+	return nullptr;
+}
 
 //-------------------------------- dtor ----------------------------------
 //------------------------------------------------------------------------
@@ -152,9 +184,15 @@ void GameWorld::Update(double time_elapsed)
   
 
   //update the vehicles
-  for (unsigned int a=0; a<m_Vehicles.size(); ++a)
+  for (unsigned int v=0; v<m_Vehicles.size(); ++v)
   {
-    m_Vehicles[a]->Update(time_elapsed);
+    m_Vehicles[v]->Update(time_elapsed);
+  }
+
+  //update the agents
+  for (unsigned int a = 0; a<m_Agents.size(); ++a)
+  {
+	m_Agents[a]->Update(time_elapsed);
   }
 }
   
@@ -610,5 +648,7 @@ void GameWorld::Render()
   {
     m_pCellSpace->RenderCells();
   }
+
+  gdi->TextAtPos(5, cyClient() - 40, m_Agents[1]->debug);
 
 }

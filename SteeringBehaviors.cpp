@@ -240,21 +240,21 @@ Vector2D SteeringBehavior::CalculatePrioritized()
   {
     if (On(separation))
     {
-      force = Separation(m_pVehicle->World()->Agents()) * m_dWeightSeparation;
+      force = Separation(m_pVehicle->World()->Vehicles()) * m_dWeightSeparation;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
 
     if (On(allignment))
     {
-      force = Alignment(m_pVehicle->World()->Agents()) * m_dWeightAlignment;
+      force = Alignment(m_pVehicle->World()->Vehicles()) * m_dWeightAlignment;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
 
     if (On(cohesion))
     {
-      force = Cohesion(m_pVehicle->World()->Agents()) * m_dWeightCohesion;
+      force = Cohesion(m_pVehicle->World()->Vehicles()) * m_dWeightCohesion;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
@@ -265,21 +265,21 @@ Vector2D SteeringBehavior::CalculatePrioritized()
 
     if (On(separation))
     {
-      force = SeparationPlus(m_pVehicle->World()->Agents()) * m_dWeightSeparation;
+      force = SeparationPlus(m_pVehicle->World()->Vehicles()) * m_dWeightSeparation;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
 
     if (On(allignment))
     {
-      force = AlignmentPlus(m_pVehicle->World()->Agents()) * m_dWeightAlignment;
+      force = AlignmentPlus(m_pVehicle->World()->Vehicles()) * m_dWeightAlignment;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
 
     if (On(cohesion))
     {
-      force = CohesionPlus(m_pVehicle->World()->Agents()) * m_dWeightCohesion;
+      force = CohesionPlus(m_pVehicle->World()->Vehicles()) * m_dWeightCohesion;
 
       if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
     }
@@ -390,34 +390,34 @@ Vector2D SteeringBehavior::CalculateWeightedSum()
   {
     if (On(separation))
     {
-      m_vSteeringForce += Separation(m_pVehicle->World()->Agents()) * m_dWeightSeparation;
+      m_vSteeringForce += Separation(m_pVehicle->World()->Vehicles()) * m_dWeightSeparation;
     }
 
     if (On(allignment))
     {
-      m_vSteeringForce += Alignment(m_pVehicle->World()->Agents()) * m_dWeightAlignment;
+      m_vSteeringForce += Alignment(m_pVehicle->World()->Vehicles()) * m_dWeightAlignment;
     }
 
     if (On(cohesion))
     {
-      m_vSteeringForce += Cohesion(m_pVehicle->World()->Agents()) * m_dWeightCohesion;
+      m_vSteeringForce += Cohesion(m_pVehicle->World()->Vehicles()) * m_dWeightCohesion;
     }
   }
   else
   {
     if (On(separation))
     {
-      m_vSteeringForce += SeparationPlus(m_pVehicle->World()->Agents()) * m_dWeightSeparation;
+      m_vSteeringForce += SeparationPlus(m_pVehicle->World()->Vehicles()) * m_dWeightSeparation;
     }
 
     if (On(allignment))
     {
-      m_vSteeringForce += AlignmentPlus(m_pVehicle->World()->Agents()) * m_dWeightAlignment;
+      m_vSteeringForce += AlignmentPlus(m_pVehicle->World()->Vehicles()) * m_dWeightAlignment;
     }
 
     if (On(cohesion))
     {
-      m_vSteeringForce += CohesionPlus(m_pVehicle->World()->Agents()) * m_dWeightCohesion;
+      m_vSteeringForce += CohesionPlus(m_pVehicle->World()->Vehicles()) * m_dWeightCohesion;
     }
   }
 
@@ -529,7 +529,7 @@ Vector2D SteeringBehavior::CalculateDithered()
   {
     if (On(separation) && RandFloat() < Prm.prSeparation)
     {
-      m_vSteeringForce += Separation(m_pVehicle->World()->Agents()) * 
+      m_vSteeringForce += Separation(m_pVehicle->World()->Vehicles()) * 
                           m_dWeightSeparation / Prm.prSeparation;
 
       if (!m_vSteeringForce.isZero())
@@ -545,7 +545,7 @@ Vector2D SteeringBehavior::CalculateDithered()
   {
     if (On(separation) && RandFloat() < Prm.prSeparation)
     {
-      m_vSteeringForce += SeparationPlus(m_pVehicle->World()->Agents()) * 
+      m_vSteeringForce += SeparationPlus(m_pVehicle->World()->Vehicles()) * 
                           m_dWeightSeparation / Prm.prSeparation;
 
       if (!m_vSteeringForce.isZero())
@@ -589,7 +589,7 @@ Vector2D SteeringBehavior::CalculateDithered()
   {
     if (On(allignment) && RandFloat() < Prm.prAlignment)
     {
-      m_vSteeringForce += Alignment(m_pVehicle->World()->Agents()) *
+      m_vSteeringForce += Alignment(m_pVehicle->World()->Vehicles()) *
                           m_dWeightAlignment / Prm.prAlignment;
 
       if (!m_vSteeringForce.isZero())
@@ -602,7 +602,7 @@ Vector2D SteeringBehavior::CalculateDithered()
 
     if (On(cohesion) && RandFloat() < Prm.prCohesion)
     {
-      m_vSteeringForce += Cohesion(m_pVehicle->World()->Agents()) * 
+      m_vSteeringForce += Cohesion(m_pVehicle->World()->Vehicles()) * 
                           m_dWeightCohesion / Prm.prCohesion;
 
       if (!m_vSteeringForce.isZero())
@@ -617,7 +617,7 @@ Vector2D SteeringBehavior::CalculateDithered()
   {
     if (On(allignment) && RandFloat() < Prm.prAlignment)
     {
-      m_vSteeringForce += AlignmentPlus(m_pVehicle->World()->Agents()) *
+      m_vSteeringForce += AlignmentPlus(m_pVehicle->World()->Vehicles()) *
                           m_dWeightAlignment / Prm.prAlignment;
 
       if (!m_vSteeringForce.isZero())
@@ -630,7 +630,7 @@ Vector2D SteeringBehavior::CalculateDithered()
 
     if (On(cohesion) && RandFloat() < Prm.prCohesion)
     {
-      m_vSteeringForce += CohesionPlus(m_pVehicle->World()->Agents()) *
+      m_vSteeringForce += CohesionPlus(m_pVehicle->World()->Vehicles()) *
                           m_dWeightCohesion / Prm.prCohesion;
 
       if (!m_vSteeringForce.isZero())

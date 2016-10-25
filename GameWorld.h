@@ -14,6 +14,8 @@
 //------------------------------------------------------------------------
 #include <windows.h>
 #include <vector>
+#include <map>
+using std::map;
 
 #include "2d/Vector2D.h"
 #include "time/PrecisionTimer.h"
@@ -41,6 +43,9 @@ private:
 
   //a container of all the moving entities
   std::vector<Vehicle*>         m_Vehicles;
+
+  //correspondance between agents and vehicles
+  map<int, int>					m_Vehicle2Agent;
 
   //any obstacles
   std::vector<BaseGameEntity*>  m_Obstacles;
@@ -90,6 +95,8 @@ public:
   
   GameWorld(int cx, int cy);
 
+  Agent* getAgent(Vehicle*);
+
   ~GameWorld();
 
   void  Update(double time_elapsed);
@@ -112,7 +119,8 @@ public:
   const std::vector<Wall2D>&          Walls(){return m_Walls;}                          
   CellSpacePartition<Vehicle*>*       CellSpace(){return m_pCellSpace;}
   const std::vector<BaseGameEntity*>& Obstacles()const{return m_Obstacles;}
-  const std::vector<Vehicle*>&        Agents(){return m_Vehicles;}
+  const std::vector<Vehicle*>&        Vehicles(){return m_Vehicles;}
+  const std::vector<Agent*>&          Agents() { return m_Agents; }
 
 
   //handle WM_COMMAND messages
