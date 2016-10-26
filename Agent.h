@@ -40,14 +40,14 @@ protected:
 	int followers;
 
 public:
-	LeaderAgent(GameWorld* world, int maxFollowers, Vector2D position = Vector2D(-1, -1), double rotation = RandFloat()*TwoPi);
+	LeaderAgent(GameWorld* world, int maxFollowers = -1, Vector2D position = Vector2D(-1, -1), double rotation = RandFloat()*TwoPi);
 
 	inline LeaderAgent* getLeader() { return this; }
 
 	bool incFollowers();
 	bool decFollowers();
 	inline bool canAddFollower() const {
-		return followers <= maxFollowers;
+		return maxFollowers < 0 || followers < maxFollowers;
 	}
 
 	inline void takeControl() {

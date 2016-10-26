@@ -99,7 +99,7 @@ GameWorld::GameWorld(int cx, int cy):
   for (int i = 0; i < nbAgents; i++) {
 
 	if (i < nbLeaders)
-	  agent = new LeaderAgent(this, 4 + i*5);
+	  agent = new LeaderAgent(this, i*4 - 1);
 	else
 	  agent = new ChaserAgent(this);
 
@@ -110,9 +110,8 @@ GameWorld::GameWorld(int cx, int cy):
   }
 
   m_Agents[0]->getVehicle()->Steering()->WanderOff();
-  m_Agents[1]->getVehicle()->Steering()->WanderOff();
-  m_Agents[1]->getVehicle()->Steering()->ArriveOn();
-  m_Agents[1]->getVehicle()->SetMaxSpeed(150);
+  m_Agents[0]->getVehicle()->Steering()->UserInputOn();
+  m_Agents[0]->getVehicle()->SetMaxSpeed(150);
  
   //create any obstacles or walls
   //CreateObstacles();

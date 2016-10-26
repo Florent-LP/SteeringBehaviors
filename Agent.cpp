@@ -37,7 +37,7 @@ LeaderAgent::LeaderAgent(GameWorld* world, int maxFollowers, Vector2D position, 
 }
 
 bool LeaderAgent::incFollowers() {
-	if (followers < maxFollowers) {
+	if (canAddFollower()) {
 		followers++;
 		return true;
 	}
@@ -81,7 +81,6 @@ bool ChaserAgent::follow(Agent* agent) {
 		prevAgent->setNext(this);
 
 		if (newNext) {
-			//newNext->follow(this);
 			newNext->getVehicle()->Steering()->OffsetPursuitOff();
 			newNext->getVehicle()->Steering()->OffsetPursuitOn(vehicle, newNext->getOffset());
 			newNext->setPrev(this);
@@ -103,7 +102,6 @@ void ChaserAgent::unfollow() {
 	leader = nullptr;
 
 	if (oldNext) {
-		//oldNext->follow(oldPrev);
 		oldNext->getVehicle()->Steering()->OffsetPursuitOff();
 		oldNext->getVehicle()->Steering()->OffsetPursuitOn(oldPrev->getVehicle(), oldNext->getOffset());
 		oldNext->setPrev(oldPrev);

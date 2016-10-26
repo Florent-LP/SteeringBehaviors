@@ -52,6 +52,7 @@ SteeringBehavior::SteeringBehavior(Vehicle* agent):
              m_dWeightHide(Prm.HideWeight),
              m_dWeightEvade(Prm.EvadeWeight),
              m_dWeightFollowPath(Prm.FollowPathWeight),
+	         m_dWeightUserInput(Prm.UserInputWeight),
              m_bCellSpaceOn(false),
              m_SummingMethod(prioritized)
 
@@ -352,6 +353,13 @@ Vector2D SteeringBehavior::CalculatePrioritized()
     if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
   }
 
+  if (On(user_input))
+  {
+	force = UserInput() * m_dWeightUserInput;
+
+	if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+  }
+
   return m_vSteeringForce;
 }
 
@@ -474,6 +482,11 @@ Vector2D SteeringBehavior::CalculateWeightedSum()
   if (On(follow_path))
   {
     m_vSteeringForce += FollowPath() * m_dWeightFollowPath;
+  }
+
+  if (On(user_input))
+  {
+	m_vSteeringForce += UserInput() * m_dWeightUserInput;
   }
 
   m_vSteeringForce.Truncate(m_pVehicle->MaxForce());
@@ -670,6 +683,18 @@ Vector2D SteeringBehavior::CalculateDithered()
   {
     m_vSteeringForce += Arrive(m_pVehicle->World()->Crosshair(), m_Deceleration) * 
                         m_dWeightArrive / Prm.prArrive;
+
+    if (!m_vSteeringForce.isZero())
+    {
+      m_vSteeringForce.Truncate(m_pVehicle->MaxForce()); 
+      
+      return m_vSteeringForce;
+    }
+  }
+
+  if (On(user_input) && RandFloat() < Prm.prUserInput)
+  {
+    m_vSteeringForce += UserInput() * m_dWeightUserInput / Prm.prUserInput;
 
     if (!m_vSteeringForce.isZero())
     {
@@ -1439,6 +1464,31 @@ Vector2D SteeringBehavior::OffsetPursuit(const Vehicle*  leader,
 
 //for receiving keyboard input from user
 #define KEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
+
+
+//----------------------------- User Input -------------------------------
+//
+//  Controls an agent via keyboard arrows
+//------------------------------------------------------------------------
+Vector2D SteeringBehavior::UserInput() {
+	Vector2D TargetPos = Vector2D(0, 0);
+
+	if (KEYDOWN(VK_UP)) TargetPos += Vector2D(30, 0);
+	if (KEYDOWN(VK_LEFT)) TargetPos += Vector2D(5, -0.2);
+	if (KEYDOWN(VK_RIGHT)) TargetPos += Vector2D(5, 0.2);
+
+	Vector2D WorldTargetPos = PointToWorldSpace(
+		TargetPos, m_pVehicle->Heading(),
+		m_pVehicle->Side(),
+		m_pVehicle->Pos()
+	);
+
+	if (KEYDOWN(VK_DOWN) && m_pVehicle->Speed() > 2)
+		WorldTargetPos -= m_pVehicle->Velocity();
+
+	return Arrive(WorldTargetPos, fast);
+}
+
 //----------------------------- RenderAids -------------------------------
 //
 //------------------------------------------------------------------------

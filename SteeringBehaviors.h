@@ -73,6 +73,7 @@ private:
     hide               = 0x04000,
     flock              = 0x08000,
     offset_pursuit     = 0x10000,
+	user_input         = 0x20000,
   };
 
 private:
@@ -132,6 +133,7 @@ private:
   double        m_dWeightHide;
   double        m_dWeightEvade;
   double        m_dWeightFollowPath;
+  double        m_dWeightUserInput;
 
   //how far the agent can 'see'
   double        m_dViewDistance;
@@ -231,6 +233,9 @@ private:
   //method attempts to put an obstacle between itself and its opponent
   Vector2D Hide(const Vehicle* hunter, const std::vector<BaseGameEntity*>& obstacles);
 
+  //keyboard controls
+  Vector2D UserInput();
+
 
   // -- Group Behaviors -- //
 
@@ -326,6 +331,7 @@ public:
   void HideOn(Vehicle* v){m_iFlags |= hide; m_pTargetAgent1 = v;}
   void OffsetPursuitOn(Vehicle* v1, const Vector2D offset){m_iFlags |= offset_pursuit; m_vOffset = offset; m_pTargetAgent1 = v1;}  
   void FlockingOn(){CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn();}
+  void UserInputOn(){m_iFlags |= user_input;}
 
   void FleeOff()  {if(On(flee))   m_iFlags ^=flee;}
   void SeekOff()  {if(On(seek))   m_iFlags ^=seek;}
@@ -343,6 +349,7 @@ public:
   void HideOff(){if(On(hide)) m_iFlags ^=hide;}
   void OffsetPursuitOff(){if(On(offset_pursuit)) m_iFlags ^=offset_pursuit;}
   void FlockingOff(){CohesionOff(); AlignmentOff(); SeparationOff(); WanderOff();}
+  void UserInputOff(){if(On(user_input)) m_iFlags ^=user_input;}
 
   bool isFleeOn(){return On(flee);}
   bool isSeekOn(){return On(seek);}
@@ -359,6 +366,7 @@ public:
   bool isInterposeOn(){return On(interpose);}
   bool isHideOn(){return On(hide);}
   bool isOffsetPursuitOn(){return On(offset_pursuit);}
+  bool isUserInputOn(){return On(user_input);}
 
   double DBoxLength()const{return m_dDBoxLength;}
   const std::vector<Vector2D>& GetFeelers()const{return m_Feelers;}
