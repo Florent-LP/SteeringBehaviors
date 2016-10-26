@@ -1471,21 +1471,25 @@ Vector2D SteeringBehavior::OffsetPursuit(const Vehicle*  leader,
 //  Controls an agent via keyboard arrows
 //------------------------------------------------------------------------
 Vector2D SteeringBehavior::UserInput() {
+	// Create a local point from keyboard arrows
 	Vector2D TargetPos = Vector2D(0, 0);
 
 	if (KEYDOWN(VK_UP)) TargetPos += Vector2D(30, 0);
 	if (KEYDOWN(VK_LEFT)) TargetPos += Vector2D(5, -0.2);
 	if (KEYDOWN(VK_RIGHT)) TargetPos += Vector2D(5, 0.2);
 
+	// Convert it to the world space
 	Vector2D WorldTargetPos = PointToWorldSpace(
 		TargetPos, m_pVehicle->Heading(),
 		m_pVehicle->Side(),
 		m_pVehicle->Pos()
 	);
 
+	// The down arrow is used to brake
 	if (KEYDOWN(VK_DOWN) && m_pVehicle->Speed() > 2)
 		WorldTargetPos -= m_pVehicle->Velocity();
 
+	// Arrive to the final target
 	return Arrive(WorldTargetPos, fast);
 }
 

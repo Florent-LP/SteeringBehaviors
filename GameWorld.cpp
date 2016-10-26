@@ -96,7 +96,7 @@ GameWorld::GameWorld(int cx, int cy):
   ctrLeader->takeControl();
   m_Agents.push_back(ctrLeader);
 
-  m_Agents.push_back(new LeaderAgent(this, 5));
+  //m_Agents.push_back(new LeaderAgent(this, 5));
 
   unsigned nbChasers = 20;
   for (unsigned i = 0; i < nbChasers; i++)

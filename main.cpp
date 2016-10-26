@@ -11,6 +11,7 @@
 #include "ParamLoader.h"
 #include "resource.h"
 #include "misc/WindowUtils.h"
+#include "Agent.h"
 
 //--------------------------------- Globals ------------------------------
 //
@@ -128,6 +129,16 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
             }
 
             break;
+
+		  case 'V':
+		  {
+			  std::vector<Agent*> agents = g_GameWorld->Agents();
+			  for (unsigned i = 0; i < agents.size(); i++)
+				  if (LeaderAgent* leader = dynamic_cast<LeaderAgent*>(agents[i]))
+					  if (leader->isControlled()) leader->toggleVform();
+		  }
+
+		  break;
            
 
         }//end switch
