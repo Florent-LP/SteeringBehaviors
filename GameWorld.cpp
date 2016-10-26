@@ -92,16 +92,19 @@ GameWorld::GameWorld(int cx, int cy):
   }
 #endif*/
 
+  // Leaders
   LeaderAgent* ctrLeader = new LeaderAgent(this);
   ctrLeader->takeControl();
   m_Agents.push_back(ctrLeader);
 
-  //m_Agents.push_back(new LeaderAgent(this, 5));
+  m_Agents.push_back(new LeaderAgent(this, 8));
 
+  // Chasers
   unsigned nbChasers = 20;
   for (unsigned i = 0; i < nbChasers; i++)
 	  m_Agents.push_back(new ChaserAgent(this));
   
+  // Vehicles
   for (unsigned i = 0; i < m_Agents.size(); i++) {
 	m_Vehicles.push_back(m_Agents[i]->getVehicle());
 	//add it to the cell subdivision
@@ -361,6 +364,17 @@ void GameWorld::HandleKeyPresses(WPARAM wParam)
           }
         }
         break;
+
+	case 'V':
+
+		// Activate V formation
+		LeaderAgent* leader;
+		for (unsigned i = 0; i < m_Agents.size(); i++)
+			// Check if the agent is a leader
+			if (leader = dynamic_cast<LeaderAgent*>(m_Agents[i]))
+				/*if (leader->isControlled())*/ leader->toggleVform();
+
+		break;
 
   }//end switch
 }

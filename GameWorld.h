@@ -10,6 +10,7 @@
 //          update and render calls (excluding main of course)
 //
 //  Author: Mat Buckland 2002 (fup@ai-junkie.com)
+//  Modified : Florent LE PRINCE <florent.le-prince@uqac.ca>, Maxime LEGRAND <maxime.legrand1@uqac.ca>
 //
 //------------------------------------------------------------------------
 #include <windows.h>
@@ -44,7 +45,7 @@ private:
   //a container of all the moving entities
   std::vector<Vehicle*>         m_Vehicles;
 
-  //correspondance between agents and vehicles
+  //correspondance between agents and vehicles (legacy, not used anymore)
   map<int, int>					m_Vehicle2Agent;
 
   //any obstacles

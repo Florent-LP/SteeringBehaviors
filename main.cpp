@@ -11,13 +11,12 @@
 #include "ParamLoader.h"
 #include "resource.h"
 #include "misc/WindowUtils.h"
-#include "Agent.h"
 
 //--------------------------------- Globals ------------------------------
 //
 //------------------------------------------------------------------------
 
-char* g_szApplicationName = "Steering Behaviors - Another Big Shoal";
+char* g_szApplicationName = "Steering Behaviors - Leader Following";
 char*	g_szWindowClassName = "MyWindowClass";
 
 GameWorld* g_GameWorld;
@@ -87,6 +86,7 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          ChangeMenuState(hwnd, IDR_PRIORITIZED, MFS_CHECKED);
          ChangeMenuState(hwnd, ID_VIEW_FPS, MFS_CHECKED);
 
+		 // Activate the needed parameters
 		 SendMessage(hwnd, WM_COMMAND, IDR_PARTITIONING, NULL);
 		 SendMessage(hwnd, WM_COMMAND, IDR_WEIGHTED_SUM, NULL);
 		 SendMessage(hwnd, WM_COMMAND, ID_MENU_SMOOTHING, NULL);
@@ -129,16 +129,6 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
             }
 
             break;
-
-		  case 'V':
-		  {
-			  std::vector<Agent*> agents = g_GameWorld->Agents();
-			  for (unsigned i = 0; i < agents.size(); i++)
-				  if (LeaderAgent* leader = dynamic_cast<LeaderAgent*>(agents[i]))
-					  if (leader->isControlled()) leader->toggleVform();
-		  }
-
-		  break;
            
 
         }//end switch

@@ -284,8 +284,8 @@ void ChaserAgent::Update(double time_elapsed) {
 
 	// Iterate through all agents in the game world
 	for (unsigned i = 0; i < agents.size(); i++) {
-		// The agent must have a different leader from this one
-		if (agents[i] != this && agents[i]->getLeader() != nullptr && agents[i]->getLeader() != leader) {
+		//if (agents[i] != this && agents[i]->getLeader() != nullptr && agents[i]->getLeader() != leader) { // Circular following bug
+		if (agents[i] != this && agents[i]->getLeader() != nullptr && leader == nullptr) { // TmpFix : Disable the agents from switching their leader
 
 			Vector2D toAgent = agents[i]->getVehicle()->Pos() - vehicle->Pos();
 			if (toAgent.LengthSq() < followRange * followRange) {
