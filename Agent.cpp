@@ -19,8 +19,8 @@ Agent::Agent(GameWorld* world, Vector2D position, double rotation) :
 		Prm.MaxTurnRatePerSecond, //max turn rate
 		Prm.VehicleScale);        //scale
 
-	if (!vehicle->Steering()->isSpacePartitioningOn())
-		vehicle->Steering()->ToggleSpacePartitioningOnOff();
+	//if (!vehicle->Steering()->isSpacePartitioningOn())
+		//vehicle->Steering()->ToggleSpacePartitioningOnOff();
 }
 
 Agent::~Agent() {
@@ -52,6 +52,18 @@ bool LeaderAgent::decFollowers() {
 	}
 	else
 		return false;
+}
+
+void LeaderAgent::takeControl() {
+	vehicle->Steering()->WanderOff();
+	vehicle->Steering()->UserInputOn();
+	vehicle->SetMaxSpeed(150);
+}
+
+void LeaderAgent::cancelControl() {
+	vehicle->Steering()->UserInputOff();
+	vehicle->Steering()->WanderOn();
+	vehicle->SetMaxSpeed(70);
 }
 
 LeaderAgent::~LeaderAgent() {
@@ -115,13 +127,16 @@ void ChaserAgent::unfollow() {
 }
 
 void ChaserAgent::Update(double time_elapsed) {
-	//if (RandInt(0, 999) != 0) return; // 0.001 proba to follow another agent
+	if (RandInt(0, 999) != 0) return; // 0.001 proba to follow another agent
 
 	const double followRange = 50.0;
 	const std::vector<Agent*>& agents = vehicle->World()->Agents();
 
 	for (unsigned i = 0; i < agents.size(); i++) {
-		if ( agents[i] != this && (leader == nullptr || agents[i]->getLeader() != leader) ) {
+		if (agents[i] != this && agents[i]->getLeader() != nullptr && agents[i]->getLeader() != leader) {
+
+			//if (ChaserAgent* chaser = dynamic_cast<ChaserAgent*>(agents[i]))
+				//if (chaser->getPrev() == this) continue;
 
 			Vector2D toAgent = agents[i]->getVehicle()->Pos() - vehicle->Pos();
 			if (toAgent.LengthSq() < followRange * followRange) {

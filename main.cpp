@@ -83,10 +83,12 @@ LRESULT CALLBACK WindowProc (HWND   hwnd,
          
          g_GameWorld = new GameWorld(cxClient, cyClient);
 
-		 ChangeMenuState(hwnd, IDR_PARTITIONING, MFS_CHECKED);
-         ChangeMenuState(hwnd, IDR_WEIGHTED_SUM, MFS_CHECKED);
+         ChangeMenuState(hwnd, IDR_PRIORITIZED, MFS_CHECKED);
          ChangeMenuState(hwnd, ID_VIEW_FPS, MFS_CHECKED);
-		 ChangeMenuState(hwnd, ID_MENU_SMOOTHING, MFS_CHECKED);
+
+		 SendMessage(hwnd, WM_COMMAND, IDR_PARTITIONING, NULL);
+		 SendMessage(hwnd, WM_COMMAND, IDR_WEIGHTED_SUM, NULL);
+		 SendMessage(hwnd, WM_COMMAND, ID_MENU_SMOOTHING, NULL);
          
       }
 

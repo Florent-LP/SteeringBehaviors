@@ -50,11 +50,8 @@ public:
 		return maxFollowers < 0 || followers < maxFollowers;
 	}
 
-	inline void takeControl() {
-	}
-
-	inline void cancelControl() {
-	}
+	void takeControl();
+	void cancelControl();
 
 	~LeaderAgent();
 };

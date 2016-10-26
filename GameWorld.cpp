@@ -92,26 +92,21 @@ GameWorld::GameWorld(int cx, int cy):
   }
 #endif*/
 
-  int nbAgents = 20;
-  int nbLeaders = 2;
+  LeaderAgent* ctrLeader = new LeaderAgent(this);
+  ctrLeader->takeControl();
+  m_Agents.push_back(ctrLeader);
 
-  Agent* agent;
-  for (int i = 0; i < nbAgents; i++) {
+  m_Agents.push_back(new LeaderAgent(this, 5));
 
-	if (i < nbLeaders)
-	  agent = new LeaderAgent(this, i*4 - 1);
-	else
-	  agent = new ChaserAgent(this);
-
-	m_Agents.push_back(agent);
-	m_Vehicles.push_back(agent->getVehicle()); // À supprimer ?
+  unsigned nbChasers = 20;
+  for (unsigned i = 0; i < nbChasers; i++)
+	  m_Agents.push_back(new ChaserAgent(this));
+  
+  for (unsigned i = 0; i < m_Agents.size(); i++) {
+	m_Vehicles.push_back(m_Agents[i]->getVehicle());
 	//add it to the cell subdivision
-	m_pCellSpace->AddEntity(agent->getVehicle());
+	m_pCellSpace->AddEntity(m_Agents[i]->getVehicle());
   }
-
-  m_Agents[0]->getVehicle()->Steering()->WanderOff();
-  m_Agents[0]->getVehicle()->Steering()->UserInputOn();
-  m_Agents[0]->getVehicle()->SetMaxSpeed(150);
  
   //create any obstacles or walls
   //CreateObstacles();
@@ -616,7 +611,7 @@ void GameWorld::Render()
     }
   }  
 
-#define CROSSHAIR
+//#define CROSSHAIR
 #ifdef CROSSHAIR
   //and finally the crosshair
   gdi->RedPen();
